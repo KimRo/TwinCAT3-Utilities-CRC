@@ -29,7 +29,7 @@
 # cannot be installed by a TwinCAT function or cannot be downloaded from the Internet!
 *.compiled-library
 *.library
-!Tc3_Any.library
+!**/Compiled Library/*
 
 *.compileinfo
 *.core
