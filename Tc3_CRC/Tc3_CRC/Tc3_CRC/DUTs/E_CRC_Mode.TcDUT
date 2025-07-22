@@ -1,0 +1,19 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1">
+  <DUT Name="E_CRC_Mode" Id="{a21d5f51-4bf8-4652-8248-7dd7b5bfaef9}">
+    <Declaration><![CDATA[{attribute 'qualified_only'}
+{attribute 'strict'}
+{attribute 'to_string'}
+TYPE E_CRC_Mode :
+(
+	CRC8	:= 0,
+	CRC16 	:= 1,
+	CRC24 	:= 2,
+	CRC32 	:= 3,
+	CRC40 	:= 4,
+	CRC64 	:= 7
+) BYTE;
+END_TYPE
+]]></Declaration>
+  </DUT>
+</TcPlcObject>

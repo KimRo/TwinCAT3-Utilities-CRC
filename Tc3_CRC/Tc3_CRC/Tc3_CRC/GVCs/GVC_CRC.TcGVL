@@ -1,0 +1,93 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1">
+  <GVL Name="GVC_CRC" Id="{bd9aa066-4efd-4630-ad26-83c1c924f3b7}">
+    <Declaration><![CDATA[{attribute 'qualified_only'}
+VAR_GLOBAL CONSTANT
+	CRCMasks 		: ARRAY[0..E_CRC_Mode.CRC64] OF XWORD 	:= [16#FF, 16#FFFF, 16#FFFFFF, 16#FFFFFFFF, 16#FFFFFFFFFF, 16#0, 16#0, 16#FFFFFFFFFFFFFFFF];
+	CRCMsb			: ARRAY[0..E_CRC_Mode.CRC64] OF XWORD 	:= [16#80, 16#8000, 16#800000, 16#80000000, 16#8000000000, 16#0, 16#0, 16#8000000000000000]; 
+	CRCShift		: ARRAY[0..E_CRC_Mode.CRC64] OF BYTE 	:= [0, 8, 16, 24, 32, 0, 0, 56];	
+	referenceCheck	: ARRAY[1..9] OF BYTE := [16#31, 16#32, 16#33, 16#34, 16#35, 16#36, 16#37, 16#38, 16#39]; // Number 123456789  
+
+	// CRC Type definition
+	// source: https://reveng.sourceforge.io/crc-catalogue/all.htm
+	CRC_Parameters : ARRAY[0..E_CRC_Type.CRC_NO_OF_TYPES] OF ST_CRC_Params := [
+(* CRC_8_AUTOSAR *)      		(bitWidth := 8, polynomial := 16#2F, initCRC := 16#FF, reflectInitial := FALSE, reflected := FALSE, XorOut := 16#FF, Check := 16#DF, Residue := 16#42),
+(* CRC_8_BLUETOOTH *)    		(bitWidth := 8, polynomial := 16#A7, initCRC := 16#00, reflectInitial := FALSE, reflected := TRUE,  XorOut := 16#00, Check := 16#26, Residue := 16#00),
+(* CRC_8_CDMA2000 *)     		(bitWidth := 8, polynomial := 16#9B, initCRC := 16#FF, reflectInitial := FALSE, reflected := FALSE, XorOut := 16#00, Check := 16#DA, Residue := 16#00),
+(* CRC_8_DARC *)         		(bitWidth := 8, polynomial := 16#39, initCRC := 16#00, reflectInitial := FALSE, reflected := TRUE,  XorOut := 16#00, Check := 16#15, Residue := 16#00),
+(* CRC_8_DVB_S2 *)       		(bitWidth := 8, polynomial := 16#D5, initCRC := 16#00, reflectInitial := FALSE, reflected := FALSE, XorOut := 16#00, Check := 16#BC, Residue := 16#00),
+(* CRC_8_GSM_A *)        		(bitWidth := 8, polynomial := 16#1D, initCRC := 16#00, reflectInitial := FALSE, reflected := FALSE, XorOut := 16#00, Check := 16#37, Residue := 16#00),
+(* CRC_8_GSM_B *)        		(bitWidth := 8, polynomial := 16#49, initCRC := 16#00, reflectInitial := FALSE, reflected := FALSE, XorOut := 16#FF, Check := 16#94, Residue := 16#53),
+(* CRC_8_HITAG *)        		(bitWidth := 8, polynomial := 16#1D, initCRC := 16#FF, reflectInitial := FALSE, reflected := FALSE, XorOut := 16#00, Check := 16#B4, Residue := 16#00),
+(* CRC_8_I_432_1 *)      		(bitWidth := 8, polynomial := 16#07, initCRC := 16#00, reflectInitial := FALSE, reflected := FALSE, XorOut := 16#55, Check := 16#A1, Residue := 16#AC),
+(* CRC_8_I_CODE *)       		(bitWidth := 8, polynomial := 16#1D, initCRC := 16#FD, reflectInitial := FALSE, reflected := FALSE, XorOut := 16#00, Check := 16#7E, Residue := 16#00),
+(* CRC_8_LTE *)          		(bitWidth := 8, polynomial := 16#9B, initCRC := 16#00, reflectInitial := FALSE, reflected := FALSE, XorOut := 16#00, Check := 16#EA, Residue := 16#00),
+(* CRC_8_MAXIM_DOW *)    		(bitWidth := 8, polynomial := 16#31, initCRC := 16#00, reflectInitial := FALSE, reflected := TRUE,  XorOut := 16#00, Check := 16#A1, Residue := 16#00),
+(* CRC_8_MIFARE_MAD *)   		(bitWidth := 8, polynomial := 16#1D, initCRC := 16#C7, reflectInitial := FALSE, reflected := FALSE, XorOut := 16#00, Check := 16#99, Residue := 16#00),
+(* CRC_8_NRSC_5 *)       		(bitWidth := 8, polynomial := 16#31, initCRC := 16#FF, reflectInitial := FALSE, reflected := FALSE, XorOut := 16#00, Check := 16#F7, Residue := 16#00),
+(* CRC_8_OPENSAFETY *)   		(bitWidth := 8, polynomial := 16#2F, initCRC := 16#00, reflectInitial := FALSE, reflected := FALSE, XorOut := 16#00, Check := 16#3E, Residue := 16#00),
+(* CRC_8_ROHC *)         		(bitWidth := 8, polynomial := 16#07, initCRC := 16#FF, reflectInitial := FALSE, reflected := TRUE,  XorOut := 16#00, Check := 16#D0, Residue := 16#00),
+(* CRC_8_SAE_J1850 *)    		(bitWidth := 8, polynomial := 16#1D, initCRC := 16#FF, reflectInitial := FALSE, reflected := FALSE, XorOut := 16#FF, Check := 16#4B, Residue := 16#C4),
+(* CRC_8_SMBUS *)        		(bitWidth := 8, polynomial := 16#07, initCRC := 16#00, reflectInitial := FALSE, reflected := FALSE, XorOut := 16#00, Check := 16#F4, Residue := 16#00),
+(* CRC_8_TECH_3250 *)    		(bitWidth := 8, polynomial := 16#1D, initCRC := 16#FF, reflectInitial := FALSE, reflected := TRUE,  XorOut := 16#00, Check := 16#97, Residue := 16#00),
+(* CRC_8_WCDMA *)        		(bitWidth := 8, polynomial := 16#9B, initCRC := 16#00, reflectInitial := FALSE, reflected := TRUE,  XorOut := 16#00, Check := 16#25, Residue := 16#00),
+(* CRC_16_ARC *)                (bitWidth := 16, polynomial := 16#8005, initCRC := 16#0000, reflectInitial := FALSE, reflected := TRUE,  XorOut := 16#0000, Check := 16#BB3D, Residue := 16#0000),
+(* CRC_16_CDMA2000 *)           (bitWidth := 16, polynomial := 16#C867, initCRC := 16#FFFF, reflectInitial := FALSE, reflected := FALSE, XorOut := 16#0000, Check := 16#4C06, Residue := 16#0000),
+(* CRC_16_CMS *)                (bitWidth := 16, polynomial := 16#8005, initCRC := 16#FFFF, reflectInitial := FALSE, reflected := FALSE, XorOut := 16#0000, Check := 16#AEE7, Residue := 16#0000),
+(* CRC_16_DDS_110 *)            (bitWidth := 16, polynomial := 16#8005, initCRC := 16#800D, reflectInitial := FALSE, reflected := FALSE, XorOut := 16#0000, Check := 16#9ECF, Residue := 16#0000),
+(* CRC_16_DECT_R *)             (bitWidth := 16, polynomial := 16#0589, initCRC := 16#0000, reflectInitial := FALSE, reflected := FALSE, XorOut := 16#0001, Check := 16#007E, Residue := 16#0589),
+(* CRC_16_DECT_X *)             (bitWidth := 16, polynomial := 16#0589, initCRC := 16#0000, reflectInitial := FALSE, reflected := FALSE, XorOut := 16#0000, Check := 16#007F, Residue := 16#0000),
+(* CRC_16_DNP *)                (bitWidth := 16, polynomial := 16#3D65, initCRC := 16#0000, reflectInitial := FALSE, reflected := TRUE,  XorOut := 16#FFFF, Check := 16#EA82, Residue := 16#66C5),
+(* CRC_16_EN_13757 *)           (bitWidth := 16, polynomial := 16#3D65, initCRC := 16#0000, reflectInitial := FALSE, reflected := FALSE, XorOut := 16#FFFF, Check := 16#C2B7, Residue := 16#A366),
+(* CRC_16_GENIBUS *)            (bitWidth := 16, polynomial := 16#1021, initCRC := 16#FFFF, reflectInitial := FALSE, reflected := FALSE, XorOut := 16#FFFF, Check := 16#D64E, Residue := 16#1D0F),
+(* CRC_16_GSM *)                (bitWidth := 16, polynomial := 16#1021, initCRC := 16#0000, reflectInitial := FALSE, reflected := FALSE, XorOut := 16#FFFF, Check := 16#CE3C, Residue := 16#1D0F),
+(* CRC_16_IBM_3740 *)           (bitWidth := 16, polynomial := 16#1021, initCRC := 16#FFFF, reflectInitial := FALSE, reflected := FALSE, XorOut := 16#0000, Check := 16#29B1, Residue := 16#0000),
+(* CRC_16_IBM_SDLC *)           (bitWidth := 16, polynomial := 16#1021, initCRC := 16#FFFF, reflectInitial := FALSE, reflected := TRUE,  XorOut := 16#FFFF, Check := 16#906E, Residue := 16#F0B8),
+(* CRC_16_ISO_IEC_14443_3_A *)  (bitWidth := 16, polynomial := 16#1021, initCRC := 16#C6C6, reflectInitial := TRUE,  reflected := TRUE,  XorOut := 16#0000, Check := 16#BF05, Residue := 16#0000),
+(* CRC_16_KERMIT *)             (bitWidth := 16, polynomial := 16#1021, initCRC := 16#0000, reflectInitial := FALSE, reflected := TRUE,  XorOut := 16#0000, Check := 16#2189, Residue := 16#0000),
+(* CRC_16_LJ1200 *)             (bitWidth := 16, polynomial := 16#6F63, initCRC := 16#0000, reflectInitial := FALSE, reflected := FALSE, XorOut := 16#0000, Check := 16#BDF4, Residue := 16#0000),
+(* CRC_16_MAXIM_DOW *)          (bitWidth := 16, polynomial := 16#8005, initCRC := 16#0000, reflectInitial := FALSE, reflected := TRUE,  XorOut := 16#FFFF, Check := 16#44C2, Residue := 16#B001),
+(* CRC_16_MCRF4XX *)            (bitWidth := 16, polynomial := 16#1021, initCRC := 16#FFFF, reflectInitial := FALSE, reflected := TRUE,  XorOut := 16#0000, Check := 16#6F91, Residue := 16#0000),
+(* CRC_16_MODBUS *)             (bitWidth := 16, polynomial := 16#8005, initCRC := 16#FFFF, reflectInitial := FALSE, reflected := TRUE,  XorOut := 16#0000, Check := 16#4B37, Residue := 16#0000),
+(* CRC_16_NRSC_5 *)             (bitWidth := 16, polynomial := 16#080B, initCRC := 16#FFFF, reflectInitial := FALSE, reflected := TRUE,  XorOut := 16#0000, Check := 16#A066, Residue := 16#0000),
+(* CRC_16_OPENSAFETY_A *)       (bitWidth := 16, polynomial := 16#5935, initCRC := 16#0000, reflectInitial := FALSE, reflected := FALSE, XorOut := 16#0000, Check := 16#5D38, Residue := 16#0000),
+(* CRC_16_OPENSAFETY_B *)       (bitWidth := 16, polynomial := 16#755B, initCRC := 16#0000, reflectInitial := FALSE, reflected := FALSE, XorOut := 16#0000, Check := 16#20FE, Residue := 16#0000),
+(* CRC_16_PROFIBUS *)           (bitWidth := 16, polynomial := 16#1DCF, initCRC := 16#FFFF, reflectInitial := FALSE, reflected := FALSE, XorOut := 16#FFFF, Check := 16#A819, Residue := 16#E394),
+(* CRC_16_RIELLO *)             (bitWidth := 16, polynomial := 16#1021, initCRC := 16#B2AA, reflectInitial := TRUE,  reflected := TRUE,  XorOut := 16#0000, Check := 16#63D0, Residue := 16#0000),
+(* CRC_16_SPI_FUJITSU *)        (bitWidth := 16, polynomial := 16#1021, initCRC := 16#1D0F, reflectInitial := FALSE, reflected := FALSE, XorOut := 16#0000, Check := 16#E5CC, Residue := 16#0000),
+(* CRC_16_T10_DIF *)            (bitWidth := 16, polynomial := 16#8BB7, initCRC := 16#0000, reflectInitial := FALSE, reflected := FALSE, XorOut := 16#0000, Check := 16#D0DB, Residue := 16#0000),
+(* CRC_16_TELEDISK *)           (bitWidth := 16, polynomial := 16#A097, initCRC := 16#0000, reflectInitial := FALSE, reflected := FALSE, XorOut := 16#0000, Check := 16#0FB3, Residue := 16#0000),
+(* CRC_16_TMS37157 *)           (bitWidth := 16, polynomial := 16#1021, initCRC := 16#89EC, reflectInitial := TRUE,  reflected := TRUE,  XorOut := 16#0000, Check := 16#26B1, Residue := 16#0000),
+(* CRC_16_UMTS *)               (bitWidth := 16, polynomial := 16#8005, initCRC := 16#0000, reflectInitial := FALSE, reflected := FALSE, XorOut := 16#0000, Check := 16#FEE8, Residue := 16#0000),
+(* CRC_16_USB *)                (bitWidth := 16, polynomial := 16#8005, initCRC := 16#FFFF, reflectInitial := FALSE, reflected := TRUE,  XorOut := 16#FFFF, Check := 16#B4C8, Residue := 16#B001),
+(* CRC_16_XMODEM *)             (bitWidth := 16, polynomial := 16#1021, initCRC := 16#0000, reflectInitial := FALSE, reflected := FALSE, XorOut := 16#0000, Check := 16#31C3, Residue := 16#0000),
+(* CRC_24_BLE *)          		(bitWidth := 24, polynomial := 16#00065B,   initCRC := 16#555555,   reflectInitial := TRUE,  reflected := TRUE,  XorOut := 16#000000,   Check := 16#C25A56,   Residue := 16#000000),
+(* CRC_24_FLEXRAY_A *)    		(bitWidth := 24, polynomial := 16#5D6DCB,   initCRC := 16#FEDCBA,   reflectInitial := FALSE, reflected := FALSE, XorOut := 16#000000,   Check := 16#7979BD,   Residue := 16#000000),
+(* CRC_24_FLEXRAY_B *)    		(bitWidth := 24, polynomial := 16#5D6DCB,   initCRC := 16#ABCDEF,   reflectInitial := FALSE, reflected := FALSE, XorOut := 16#000000,   Check := 16#1F23B8,   Residue := 16#000000),
+(* CRC_24_INTERLAKEN *)   		(bitWidth := 24, polynomial := 16#328B63,   initCRC := 16#FFFFFF,   reflectInitial := FALSE, reflected := FALSE, XorOut := 16#FFFFFF,   Check := 16#B4F3E6,   Residue := 16#144E63),
+(* CRC_24_LTE_A *)        		(bitWidth := 24, polynomial := 16#864CFB,   initCRC := 16#000000,   reflectInitial := FALSE, reflected := FALSE, XorOut := 16#000000,   Check := 16#CDE703,   Residue := 16#000000),
+(* CRC_24_LTE_B *)        		(bitWidth := 24, polynomial := 16#800063,   initCRC := 16#000000,   reflectInitial := FALSE, reflected := FALSE, XorOut := 16#000000,   Check := 16#23EF52,   Residue := 16#000000),
+(* CRC_24_OPENPGP *)      		(bitWidth := 24, polynomial := 16#864CFB,   initCRC := 16#B704CE,   reflectInitial := FALSE, reflected := FALSE, XorOut := 16#000000,   Check := 16#21CF02,   Residue := 16#000000),
+(* CRC_24_OS_9 *)         		(bitWidth := 24, polynomial := 16#800063,   initCRC := 16#FFFFFF,   reflectInitial := FALSE, reflected := FALSE, XorOut := 16#FFFFFF,   Check := 16#200FA5,   Residue := 16#800FE3),
+(* CRC_32_AIXM *)         		(bitWidth := 32, polynomial := 16#814141AB, initCRC := 16#00000000, reflectInitial := FALSE, reflected := FALSE, XorOut := 16#00000000, Check := 16#3010BF7F, Residue := 16#00000000),
+(* CRC_32_AUTOSAR *)      		(bitWidth := 32, polynomial := 16#F4ACFB13, initCRC := 16#FFFFFFFF, reflectInitial := FALSE, reflected := TRUE,  XorOut := 16#FFFFFFFF, Check := 16#1697D06A, Residue := 16#904CDDBF),
+(* CRC_32_BASE91_D *)     		(bitWidth := 32, polynomial := 16#A833982B, initCRC := 16#FFFFFFFF, reflectInitial := FALSE, reflected := TRUE,  XorOut := 16#FFFFFFFF, Check := 16#87315576, Residue := 16#45270551),
+(* CRC_32_BZIP2 *)        		(bitWidth := 32, polynomial := 16#04C11DB7, initCRC := 16#FFFFFFFF, reflectInitial := FALSE, reflected := FALSE, XorOut := 16#FFFFFFFF, Check := 16#FC891918, Residue := 16#C704DD7B),
+(* CRC_32_CD_ROM_EDC *)   		(bitWidth := 32, polynomial := 16#8001801B, initCRC := 16#00000000, reflectInitial := FALSE, reflected := TRUE,  XorOut := 16#00000000, Check := 16#6EC2EDC4, Residue := 16#00000000),
+(* CRC_32_CKSUM *)        		(bitWidth := 32, polynomial := 16#04C11DB7, initCRC := 16#00000000, reflectInitial := FALSE, reflected := FALSE, XorOut := 16#FFFFFFFF, Check := 16#765E7680, Residue := 16#C704DD7B),
+(* CRC_32_ISCSI *)        		(bitWidth := 32, polynomial := 16#1EDC6F41, initCRC := 16#FFFFFFFF, reflectInitial := FALSE, reflected := TRUE,  XorOut := 16#FFFFFFFF, Check := 16#E3069283, Residue := 16#B798B438),
+(* CRC_32_ISO_HDLC *)     		(bitWidth := 32, polynomial := 16#04C11DB7, initCRC := 16#FFFFFFFF, reflectInitial := FALSE, reflected := TRUE,  XorOut := 16#FFFFFFFF, Check := 16#CBF43926, Residue := 16#DEBB20E3),
+(* CRC_32_JAMCRC *)       		(bitWidth := 32, polynomial := 16#04C11DB7, initCRC := 16#FFFFFFFF, reflectInitial := FALSE, reflected := TRUE,  XorOut := 16#00000000, Check := 16#340BC6D9, Residue := 16#00000000),
+(* CRC_32_MEF *)          		(bitWidth := 32, polynomial := 16#741B8CD7, initCRC := 16#FFFFFFFF, reflectInitial := FALSE, reflected := TRUE,  XorOut := 16#00000000, Check := 16#D2C22F51, Residue := 16#00000000),
+(* CRC_32_MPEG_2 *)       		(bitWidth := 32, polynomial := 16#04C11DB7, initCRC := 16#FFFFFFFF, reflectInitial := FALSE, reflected := FALSE, XorOut := 16#00000000, Check := 16#0376E6E7, Residue := 16#00000000),
+(* CRC_32_XFER *)         		(bitWidth := 32, polynomial := 16#000000AF, initCRC := 16#00000000, reflectInitial := FALSE, reflected := FALSE, XorOut := 16#00000000, Check := 16#BD0BE338, Residue := 16#00000000),
+(* CRC_40_GSM *)        		(bitWidth := 40, polynomial := 16#0004820009, initCRC := 16#0000000000, reflectInitial := FALSE, reflected := FALSE, XorOut := 16#FFFFFFFFFF, Check := 16#D4164FC646, Residue := 16#C4FF8071FF),
+(* CRC_64_ECMA_182 *)   		(bitWidth := 64, polynomial := 16#42F0E1EBA9EA3693, initCRC := 16#0000000000000000, reflectInitial := FALSE, reflected := FALSE, XorOut := 16#0000000000000000, Check := 16#6C40DF5F0B497347, Residue := 16#0000000000000000),
+(* CRC_64_GO_ISO *)     		(bitWidth := 64, polynomial := 16#000000000000001B, initCRC := 16#FFFFFFFFFFFFFFFF, reflectInitial := FALSE, reflected := TRUE,  XorOut := 16#FFFFFFFFFFFFFFFF, Check := 16#B90956C775A41001, Residue := 16#5300000000000000),
+(* CRC_64_MS *)         		(bitWidth := 64, polynomial := 16#259C84CBA6426349, initCRC := 16#FFFFFFFFFFFFFFFF, reflectInitial := FALSE, reflected := TRUE,  XorOut := 16#0000000000000000, Check := 16#75D4B74F024ECEEA, Residue := 16#0000000000000000),
+(* CRC_64_WE *)         		(bitWidth := 64, polynomial := 16#42F0E1EBA9EA3693, initCRC := 16#FFFFFFFFFFFFFFFF, reflectInitial := FALSE, reflected := FALSE, XorOut := 16#FFFFFFFFFFFFFFFF, Check := 16#62EC59E3F1A4F00A, Residue := 16#FCACBEBD5931A992),
+(* CRC_64_XZ *)         		(bitWidth := 64, polynomial := 16#42F0E1EBA9EA3693, initCRC := 16#FFFFFFFFFFFFFFFF, reflectInitial := FALSE, reflected := TRUE,  XorOut := 16#FFFFFFFFFFFFFFFF, Check := 16#995DC9BBDF1939FA, Residue := 16#49958C9ABD7D353F)
+    ];
+END_VAR]]></Declaration>
+  </GVL>
+</TcPlcObject>

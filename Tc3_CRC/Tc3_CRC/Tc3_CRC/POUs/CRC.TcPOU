@@ -1,0 +1,246 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1">
+  <POU Name="CRC" Id="{946bd6d9-6460-4e25-87fa-15c368a38ce6}" SpecialFunc="None">
+    <Declaration><![CDATA[FUNCTION_BLOCK CRC
+VAR
+	// values are precalulated in FB_Init 
+	CRCTableInitialized				: BOOL;
+	// Precalcated lookup table
+	CRC_Table 						: ARRAY[0..TABLESIZE-1] OF XWORD;
+	// CRC parameters
+	_polynomial						: XWORD;		// polynomial 
+	_polynomial_					: XWORD;		// reflected polynomial 
+	_bitWidth						: BYTE;
+	_initCrc						: XWORD;
+	_reflectInitial					: BOOL;
+	_reflected						: BOOL;
+	_xorOut							: XWORD;
+	_check							: XWORD;
+	_residue						: XWORD;
+END_VAR
+VAR CONSTANT
+	// Maximum size of the lookup table (no of byte values)
+	TABLESIZE						: UINT := 256;
+END_VAR]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[// use compute method]]></ST>
+    </Implementation>
+    <Method Name="compute" Id="{eea32716-b48c-4b88-906b-fe181c407a40}">
+      <Declaration><![CDATA[// Computes the CRC of the given datastream
+METHOD compute  				: XWORD
+VAR_INPUT
+    pData 						: POINTER TO BYTE;
+	dataSize					: UDINT;
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[IF _reflected			THEN
+	compute := computeReflected(pData, dataSize);
+ELSE
+	compute := computeNormal(pData, dataSize);
+END_IF]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="computeNormal" Id="{5168ee6b-7cc2-415b-92b7-0a94c2b75c4f}">
+      <Declaration><![CDATA[// Computes CRC using a standard (non-reflected) lookup table
+METHOD PRIVATE computeNormal : XWORD
+VAR_INPUT
+    pData 						: POINTER TO BYTE;
+	dataSize					: UDINT;
+END_VAR
+VAR
+	pByte 						: POINTER TO BYTE;
+	bByte						: BYTE;
+	mode						: BYTE;
+	crc							: XWORD;
+	i 							: UDINT;
+	lookupIndex					: BYTE;
+END_VAR]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[mode					:= TO_BYTE(_bitWidth / 8) - 1;
+crc 					:= _initCrc;
+
+IF _reflectInitial		THEN
+	crc					:= reflectBits(crc, _bitWidth);
+END_IF
+
+pByte					:= pData;
+FOR i := 0 TO dataSize - 1 DO
+	bByte				:= pByte^;
+	pByte				:= pByte + 1;
+	lookupIndex			:= TO_BYTE(SHR(CRC, GVC_CRC.crcShift[mode]) XOR bByte);	
+	IF (mode = E_CRC_Mode.CRC8)	THEN
+		crc				:= CRC_Table[lookupIndex];
+	ELSE
+		crc				:= SHL(crc, 8) XOR CRC_Table[lookupIndex];
+	END_IF
+	crc					:= crc AND GVC_CRC.crcMasks[mode]; 
+END_FOR
+
+computeNormal			:= (crc XOR _xorOut) AND GVC_CRC.crcMasks[mode]; 
+]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="computeReflected" Id="{d8eedbeb-0854-428c-a5d0-972e8ee56a6d}">
+      <Declaration><![CDATA[// Computes CRC using a reflected lookup table
+METHOD PRIVATE computeReflected : XWORD
+VAR_INPUT
+    pData 						: POINTER TO BYTE;
+	dataSize					: UDINT;
+END_VAR
+VAR
+	pByte 						: POINTER TO BYTE;
+	bByte						: BYTE;
+	mode						: BYTE;
+	crc							: XWORD;
+	i 							: UDINT;
+	lookupIndex					: BYTE;
+END_VAR]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[mode					:= TO_BYTE(_bitWidth / 8) - 1;
+crc 					:= _initCrc;
+
+IF _reflectInitial		THEN
+	crc					:= reflectBits(crc, _bitWidth);
+END_IF
+
+pByte					:= pData;
+FOR i := 0 TO dataSize - 1 DO
+	bByte				:= pByte^;
+	pByte				:= pByte + 1;
+	lookupIndex			:= TO_BYTE((CRC XOR bByte) AND GVC_CRC.crcMasks[0]);
+	crc					:= SHR(crc, 8) XOR CRC_Table[lookupIndex];
+END_FOR
+
+computeReflected		:= (crc XOR _xorOut) AND GVC_CRC.crcMasks[mode]; 
+]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="FB_Init" Id="{789a9bca-2caa-44ca-8ff4-e98dd5c911a2}">
+      <Declaration><![CDATA[METHOD FB_Init: BOOL
+VAR_INPUT
+    bInitRetains				: BOOL; // TRUE: the retain variables are initialized (reset warm / reset cold)
+    bInCopyCode					: BOOL; // TRUE: the instance will be copied to the copy code afterward (online change)   
+	crcType						: E_CRC_TYPE;
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[// Pass to the local init
+init(crcType);]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="generateNormalCRCTable" Id="{a0fad16f-5c92-49ba-9b7c-b2c9b94fe472}">
+      <Declaration><![CDATA[// Generates a standard CRC lookup table
+METHOD PRIVATE generateNormalCRCTable : BOOL
+VAR
+	mode					: BYTE;
+	crc						: XWORD;
+	i, j					: UINT; 
+END_VAR]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[generateNormalCRCTable := FALSE;
+mode := (_bitWidth / 8) - 1;
+
+FOR i := 0 TO TABLESIZE - 1 DO
+	crc			:= (SHL(TO___XWORD(i), GVC_CRC.CRCShift[mode])) AND GVC_CRC.CRCMasks[mode];
+	FOR j := 0 TO 7 DO
+		IF (crc AND GVC_CRC.CRCMsb[Mode]) = 0 THEN
+			crc :=  SHL(crc, 1); 
+		ELSE
+			crc := SHL(crc, 1) XOR _polynomial;
+		END_IF
+		crc		:= crc AND GVC_CRC.CRCMasks[mode];
+  	END_FOR
+	CRC_Table[i]:= crc;
+END_FOR
+generateNormalCRCTable := TRUE;
+]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="generateReflectedCRCTable" Id="{e4a03e78-ccc0-4d31-b685-66ffaa3d16eb}">
+      <Declaration><![CDATA[// Generates a reflected CRC lookup table
+METHOD PRIVATE generateReflectedCRCTable : BOOL
+VAR
+	mode					: BYTE;
+	crc						: XWORD;
+	i, j					: UINT; 
+END_VAR]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[generateReflectedCRCTable := FALSE;	 
+mode := (_bitWidth / 8) - 1;
+
+FOR i := 0 TO TABLESIZE - 1 DO
+	crc			:= i;
+	FOR j := 0 TO 7 DO
+		IF (crc AND 16#1) = 0 THEN
+			crc :=  SHR(crc, 1); 
+		ELSE
+			crc := SHR(crc, 1) XOR _polynomial_;
+		END_IF
+		crc		:= crc AND GVC_CRC.CRCMasks[mode];
+  	END_FOR
+	CRC_Table[i]:= crc;
+END_FOR
+generateReflectedCRCTable := TRUE;	 
+]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="init" Id="{d507f6b9-bd7d-494b-919c-1e5451fdd8c3}">
+      <Declaration><![CDATA[// Initializes the CRC table in function of chosesn CRC Type
+METHOD init : bool
+VAR_INPUT
+	crcType						: E_CRC_TYPE;
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[// CRC parameters
+_bitWidth				:= GVC_CRC.CRC_Parameters[crcType].bitWidth;
+_polynomial				:= GVC_CRC.CRC_Parameters[crcType].polynomial; 
+_polynomial_			:= reflectBits(_polynomial, _bitWidth);
+_initCrc				:= GVC_CRC.CRC_Parameters[crcType].initCRC;
+_reflectInitial			:= GVC_CRC.CRC_Parameters[crcType].reflectInitial;
+_reflected				:= GVC_CRC.CRC_Parameters[crcType].reflected;
+_xorOut					:= GVC_CRC.CRC_Parameters[crcType].xorOut;
+_check					:= GVC_CRC.CRC_Parameters[crcType].check;
+_residue				:= GVC_CRC.CRC_Parameters[crcType].residue;
+
+// Build CRC table
+CRCTableInitialized := FALSE;
+IF GVC_CRC.CRC_Parameters[crcType].polynomial > 0 THEN		// Valid polynomial
+	IF _reflected			THEN
+		CRCTableInitialized	:= generateReflectedCRCTable();
+	ELSE
+		CRCTableInitialized	:= generateNormalCRCTable();
+	END_IF
+END_IF
+]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="reflectBits" Id="{c36f2e49-05ec-4733-ba00-a475b8453e8e}">
+      <Declaration><![CDATA[// Reflects the bit order of a value
+METHOD PRIVATE reflectBits		: XWORD
+VAR_INPUT
+	value 						: XWORD;
+	bitWidth					: BYTE;
+END_VAR
+VAR
+	i							: BYTE;
+	shrValue					: XWORD;
+	andBit						: XWORD;
+END_VAR]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[reflectBits 		:= 16#0;
+shrValue 		:= value;
+andBit 			:= shrValue AND 16#1;
+reflectBits 		:= reflectBits + andBit;
+FOR i := 1 TO bitWidth - 1 DO
+	reflectBits 	:= SHL(reflectBits,1);
+	shrValue 	:= SHR(shrValue,1);
+	andBit 		:= shrValue AND 16#1;
+	reflectBits 	:= reflectBits + andBit;
+END_FOR
+]]></ST>
+      </Implementation>
+    </Method>
+  </POU>
+</TcPlcObject>
