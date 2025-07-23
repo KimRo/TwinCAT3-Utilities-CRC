@@ -1,6 +1,42 @@
 # 📦 Tc3_CRC Library
 
-A comprehensive TwinCAT 3 CRC (Cyclic Redundancy Check) calculation library written in Structured Text (ST), with support for numerous standard CRC algorithms.
+A comprehensive TwinCAT 3 CRC (Cyclic Redundancy Check) calculation library written in Structured Text (ST), with support for numerous standard CRC algorithms. 
+---
+
+## 🧠 Remarks and limitations
+
+- The library can for now only be ran on a x64 bit runtime because of the LWORD usage 
+- Compiled with TwinCAT 4024.67 but tested on TwinCAT 4026.17
+---
+
+
+## 🔧 CRC Functionality Overview
+
+The function block `CRC` can be initialized for any of the above types. It then uses a lookup table to efficiently compute the CRC using either normal or reflected bit logic.
+
+---
+
+## 🧪 Example
+
+```iecst
+VAR
+    fbCRC : CRC(CRC_8_AUTOSAR); // Pass the required CRC type
+    data : ARRAY[0..9] OF BYTE := [1,2,3,4,5,6,7,8,9,0];
+    result : XWORD;
+END_VAR
+
+// if in-code CRC Type reinitialisation is necessary, use the init method
+// fbCRC.FB_Init(TRUE, FALSE, E_CRC_Type.CRC_8_AUTOSAR);
+result := fbCRC.compute(ADR(data), SIZEOF(data));
+```
+
+---
+
+## 🧠 Notes
+
+- Tables are generated dynamically based on CRC parameters.
+- Supports both normal and reflected CRC variants.
+- Uses pre-initialized global data (`GVC_CRC`) for configuration.
 
 ---
 
@@ -85,31 +121,4 @@ A comprehensive TwinCAT 3 CRC (Cyclic Redundancy Check) calculation library writ
 
 Source: [reveng CRC Catalogue](https://reveng.sourceforge.io/crc-catalogue/all.htm)
 
----
 
-## 🔧 CRC Functionality Overview
-
-The function block `CRC` can be initialized for any of the above types. It then uses a lookup table to efficiently compute the CRC using either normal or reflected bit logic.
-
----
-
-## 🧪 Example
-
-```iecst
-VAR
-    fbCRC : CRC;
-    data : ARRAY[0..9] OF BYTE := [1,2,3,4,5,6,7,8,9,0];
-    result : XWORD;
-END_VAR
-
-fbCRC.FB_Init(TRUE, FALSE, E_CRC_Type.CRC_8_AUTOSAR);
-result := fbCRC.compute(ADR(data), SIZEOF(data));
-```
-
----
-
-## 🧠 Notes
-
-- Tables are generated dynamically based on CRC parameters.
-- Supports both normal and reflected CRC variants.
-- Uses pre-initialized global data (`GVC_CRC`) for configuration.

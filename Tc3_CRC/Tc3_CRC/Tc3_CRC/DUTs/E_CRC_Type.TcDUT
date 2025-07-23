@@ -82,7 +82,6 @@ TYPE E_CRC_Type : (
     CRC_64_XZ,
 	CRC_NO_OF_TYPES  		// end of enum list placeholder
 )BYTE;
-END_TYPE
-]]></Declaration>
+END_TYPE]]></Declaration>
   </DUT>
 </TcPlcObject>

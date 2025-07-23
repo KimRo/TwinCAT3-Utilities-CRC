@@ -24,7 +24,7 @@ END_IF
 
 // Test all defined crc types
 unitTestTypesOK			:= TRUE;
-FOR i := 0 TO E_CRC_Type.CRC_NO_OF_TYPES-1 DO
+FOR i := 0 TO E_CRC_Type.CRC_NO_OF_TYPES-1 DO 
 	crcType 			:= i;
 	// recalculate crc table ifo crc type
 	crc.init(crcType);	 

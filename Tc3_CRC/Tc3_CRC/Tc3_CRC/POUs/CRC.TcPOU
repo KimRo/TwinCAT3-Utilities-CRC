@@ -186,7 +186,7 @@ generateReflectedCRCTable := TRUE;
       </Implementation>
     </Method>
     <Method Name="init" Id="{d507f6b9-bd7d-494b-919c-1e5451fdd8c3}">
-      <Declaration><![CDATA[// Initializes the CRC table in function of chosesn CRC Type
+      <Declaration><![CDATA[// Initializes the CRC table in function of chosen CRC Type
 METHOD init : bool
 VAR_INPUT
 	crcType						: E_CRC_TYPE;
