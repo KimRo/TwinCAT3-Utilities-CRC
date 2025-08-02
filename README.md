@@ -3,19 +3,22 @@
 A comprehensive TwinCAT 3 CRC (Cyclic Redundancy Check) calculation library written in Structured Text (ST), with support for numerous standard CRC algorithms. 
 ---
 
+## ✅ Features
+- Supports most (all) used crc variants
+- Supports streaming data by calling the update() method multiple time before finalizing
+- The function block `CRC` can be initialized for any of the listed types below. 
+It then uses a lookup table to efficiently compute the CRC using either normal or reflected bit logic.
+
+
 ## 🧠 Remarks and limitations
 
 - The library can for now only be ran on a x64 bit runtime because of the LWORD (64bit) usage necessary for >CRC32
 - Compiled with TwinCAT 4024.67 but tested on TwinCAT 4026.17
----
 
 
-## 🔧 CRC Functionality Overview
+## 📦 Dependencies
+* This library relies on [Tc3_AlgoInterfaces](https://www.github.com/kimro/Tc3_AlgoInterfaces) for the use of the generic IDigest interface.
 
-- The function block `CRC` can be initialized for any of the above types. It then uses a lookup table to efficiently compute the CRC using either normal or reflected bit logic.
-- Supports streaming data by calling the update() method multiple time before finalizing
-
----
 
 ## 🧪 Example
 
@@ -35,15 +38,12 @@ crc.update(...);
 crc.finalize(result.byteArray);                         //Returns the crc result in various result types in alias
 ```
 
----
-
 ## 🧠 Notes
 
 - Tables are generated dynamically based on CRC parameters.
 - Supports both normal and reflected CRC variants.
 - Uses pre-initialized global data (`GVC_CRC`) for configuration.
 
----
 
 ## 🔢 Supported CRC Types
 
@@ -127,3 +127,8 @@ crc.finalize(result.byteArray);                         //Returns the crc result
 Source: [reveng CRC Catalogue](https://reveng.sourceforge.io/crc-catalogue/all.htm)
 
 
+## ⚖️ License-related information
+
+Attribution to the work of tanel312.
+This library is derived work based on https://github.com/tanel312/CRCcalculation_Library by tanel312 that was released under GNU General Public License v3.
+ 
