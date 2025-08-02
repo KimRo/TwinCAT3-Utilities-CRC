@@ -1,6 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <TcPlcObject Version="1.1.0.1">
-  <DUT Name="ST_CRC_Params" Id="{edd7a7fb-6b87-408c-b98a-341884341885}">
+  <DUT Name="ST_CRC_Params" Id="{28d7857f-5c96-4ff6-b24b-01e74e7151dc}">
     <Declaration><![CDATA[TYPE ST_CRC_Params :
 STRUCT
     bitWidth      		: BYTE;

@@ -69,7 +69,7 @@
 			</SubItem>
 		</DataType>
 		<DataType>
-			<Name GUID="{1F86C4C8-D528-34B5-6E80-2960E7FCFE5D}" Namespace="Tc3_CRC" AutoDeleteType="true">E_CRC_Type</Name>
+			<Name GUID="{4881D5CF-C2BF-E75E-A5F4-4961C94C4345}" Namespace="Tc3_CRC" AutoDeleteType="true">E_CRC_Type</Name>
 			<BitSize>8</BitSize>
 			<BaseType GUID="{18071995-0000-0000-0000-000000000001}">BYTE</BaseType>
 			<EnumInfo>
@@ -390,11 +390,11 @@
 				</Property>
 				<Property>
 					<Name>to_string_function</Name>
-					<Value>__TO_STRING__228</Value>
+					<Value>__TO_STRING__232</Value>
 				</Property>
 				<Property>
 					<Name>to_wstring_function</Name>
-					<Value>__TO_WSTRING__228</Value>
+					<Value>__TO_WSTRING__232</Value>
 				</Property>
 			</Properties>
 		</DataType>
@@ -451,14 +451,68 @@
 			</SubItem>
 		</DataType>
 		<DataType>
-			<Name GUID="{A2C1171A-1FE1-D281-4673-E61F53FD533E}" Namespace="Tc3_CRC" AutoDeleteType="true">CRC</Name>
-			<BitSize>17088</BitSize>
+			<Name GUID="{A22D8FFE-3446-5C58-B3F7-34FD9C7FE0D1}" Namespace="Tc3_CRC.Tc3_AlgoInterfaces" AutoDeleteType="true">IDigest</Name>
+			<BitSize>64</BitSize>
+			<ExtendsType GUID="{18071995-0000-0000-0000-000000000018}">PVOID</ExtendsType>
+			<Method>
+				<Name>__getalgorithm</Name>
+				<ReturnType GUID="{18071995-0000-0000-0000-000100000050}">STRING(80)</ReturnType>
+				<ReturnBitSize>648</ReturnBitSize>
+				<Properties>
+					<Property>
+						<Name>property</Name>
+					</Property>
+				</Properties>
+			</Method>
+			<Method>
+				<Name>finalize</Name>
+				<Comment><![CDATA[ Finalize the input and return any number of output bytes.]]></Comment>
+				<ReturnBitSize X64="64">32</ReturnBitSize>
+				<Parameter>
+					<Name>out</Name>
+					<Type GUID="{18071995-0000-0000-0000-000000000001}" PointerTo="1" RpcArrayDim="1">BYTE</Type>
+					<BitSize>64</BitSize>
+					<Properties>
+						<Property>
+							<Name>variable_length_array</Name>
+						</Property>
+						<Property>
+							<Name>Dimensions</Name>
+							<Value>1</Value>
+						</Property>
+					</Properties>
+				</Parameter>
+			</Method>
+			<Method>
+				<Name>init</Name>
+				<ReturnBitSize X64="64">32</ReturnBitSize>
+			</Method>
+			<Method>
+				<Name>update</Name>
+				<Comment><![CDATA[ Add input, depending on the algorithm this could be called any number of times.]]></Comment>
+				<ReturnBitSize X64="64">32</ReturnBitSize>
+				<Parameter>
+					<Name>input</Name>
+					<Type GUID="{18071995-0000-0000-0000-000000000001}" PointerTo="1">BYTE</Type>
+					<BitSize>64</BitSize>
+				</Parameter>
+				<Parameter>
+					<Name>input_len</Name>
+					<Type GUID="{18071995-0000-0000-0000-000000000007}">DWORD</Type>
+					<BitSize>32</BitSize>
+				</Parameter>
+			</Method>
+		</DataType>
+		<DataType>
+			<Name GUID="{68505DE7-CA55-F756-CD33-9D64B146A634}" Namespace="Tc3_CRC" AutoDeleteType="true">CRC</Name>
+			<BitSize>17280</BitSize>
+			<Implements GUID="{A22D8FFE-3446-5C58-B3F7-34FD9C7FE0D1}" Namespace="Tc3_CRC.Tc3_AlgoInterfaces">true</Implements>
 			<SubItem>
 				<Name>CRCTableInitialized</Name>
 				<Type GUID="{18071995-0000-0000-0000-000000000030}">BOOL</Type>
 				<Comment><![CDATA[ values are precalulated in FB_Init ]]></Comment>
 				<BitSize>8</BitSize>
-				<BitOffs>64</BitOffs>
+				<BitOffs>128</BitOffs>
 			</SubItem>
 			<SubItem>
 				<Name>CRC_Table</Name>
@@ -469,89 +523,124 @@
 				</ArrayInfo>
 				<Comment><![CDATA[ Precalcated lookup table]]></Comment>
 				<BitSize>16384</BitSize>
-				<BitOffs>128</BitOffs>
+				<BitOffs>192</BitOffs>
+			</SubItem>
+			<SubItem>
+				<Name>currentCrc</Name>
+				<Type GUID="{18071995-0000-0000-0000-000000000073}">XWORD</Type>
+				<Comment><![CDATA[ Current crc]]></Comment>
+				<BitSize>64</BitSize>
+				<BitOffs>16576</BitOffs>
+			</SubItem>
+			<SubItem>
+				<Name>_crcType</Name>
+				<Type GUID="{4881D5CF-C2BF-E75E-A5F4-4961C94C4345}" Namespace="Tc3_CRC">E_CRC_Type</Type>
+				<Comment><![CDATA[ CRC parameters]]></Comment>
+				<BitSize>8</BitSize>
+				<BitOffs>16640</BitOffs>
 			</SubItem>
 			<SubItem>
 				<Name>_polynomial</Name>
 				<Type GUID="{18071995-0000-0000-0000-000000000073}">XWORD</Type>
 				<Comment><![CDATA[ polynomial ]]></Comment>
 				<BitSize>64</BitSize>
-				<BitOffs>16512</BitOffs>
+				<BitOffs>16704</BitOffs>
 			</SubItem>
 			<SubItem>
 				<Name>_polynomial_</Name>
 				<Type GUID="{18071995-0000-0000-0000-000000000073}">XWORD</Type>
 				<Comment><![CDATA[ reflected polynomial ]]></Comment>
 				<BitSize>64</BitSize>
-				<BitOffs>16576</BitOffs>
+				<BitOffs>16768</BitOffs>
 			</SubItem>
 			<SubItem>
 				<Name>_bitWidth</Name>
 				<Type GUID="{18071995-0000-0000-0000-000000000001}">BYTE</Type>
 				<BitSize>8</BitSize>
-				<BitOffs>16640</BitOffs>
+				<BitOffs>16832</BitOffs>
 			</SubItem>
 			<SubItem>
 				<Name>_initCrc</Name>
 				<Type GUID="{18071995-0000-0000-0000-000000000073}">XWORD</Type>
 				<BitSize>64</BitSize>
-				<BitOffs>16704</BitOffs>
+				<BitOffs>16896</BitOffs>
 			</SubItem>
 			<SubItem>
 				<Name>_reflectInitial</Name>
 				<Type GUID="{18071995-0000-0000-0000-000000000030}">BOOL</Type>
 				<BitSize>8</BitSize>
-				<BitOffs>16768</BitOffs>
+				<BitOffs>16960</BitOffs>
 			</SubItem>
 			<SubItem>
 				<Name>_reflected</Name>
 				<Type GUID="{18071995-0000-0000-0000-000000000030}">BOOL</Type>
 				<BitSize>8</BitSize>
-				<BitOffs>16776</BitOffs>
+				<BitOffs>16968</BitOffs>
 			</SubItem>
 			<SubItem>
 				<Name>_xorOut</Name>
 				<Type GUID="{18071995-0000-0000-0000-000000000073}">XWORD</Type>
 				<BitSize>64</BitSize>
-				<BitOffs>16832</BitOffs>
+				<BitOffs>17024</BitOffs>
 			</SubItem>
 			<SubItem>
 				<Name>_check</Name>
 				<Type GUID="{18071995-0000-0000-0000-000000000073}">XWORD</Type>
 				<BitSize>64</BitSize>
-				<BitOffs>16896</BitOffs>
+				<BitOffs>17088</BitOffs>
 			</SubItem>
 			<SubItem>
 				<Name>_residue</Name>
 				<Type GUID="{18071995-0000-0000-0000-000000000073}">XWORD</Type>
 				<BitSize>64</BitSize>
-				<BitOffs>16960</BitOffs>
+				<BitOffs>17152</BitOffs>
+			</SubItem>
+			<SubItem>
+				<Name>isInitialReflected</Name>
+				<Type GUID="{18071995-0000-0000-0000-000000000030}">BOOL</Type>
+				<Comment><![CDATA[ internal ]]></Comment>
+				<BitSize>8</BitSize>
+				<BitOffs>17216</BitOffs>
 			</SubItem>
 			<SubItem>
 				<Name>TABLESIZE</Name>
 				<Type GUID="{18071995-0000-0000-0000-000000000005}">UINT</Type>
 				<Comment><![CDATA[ Maximum size of the lookup table (no of byte values)]]></Comment>
 				<BitSize>16</BitSize>
-				<BitOffs>17024</BitOffs>
+				<BitOffs>17232</BitOffs>
 				<Default>
 					<Value>256</Value>
 				</Default>
 			</SubItem>
 			<Method>
-				<Name>compute</Name>
-				<Comment><![CDATA[ Computes the CRC of the given datastream]]></Comment>
-				<ReturnType GUID="{18071995-0000-0000-0000-000000000073}">XWORD</ReturnType>
-				<ReturnBitSize>64</ReturnBitSize>
-				<Parameter>
-					<Name>pData</Name>
-					<Type GUID="{18071995-0000-0000-0000-000000000001}" PointerTo="1">BYTE</Type>
+				<Name>generateReflectedCRCTable</Name>
+				<Comment><![CDATA[ Generates a reflected CRC lookup table]]></Comment>
+				<ReturnType GUID="{18071995-0000-0000-0000-000000000030}">BOOL</ReturnType>
+				<ReturnBitSize>8</ReturnBitSize>
+				<Local>
+					<Name>mode</Name>
+					<Type GUID="{18071995-0000-0000-0000-000000000001}">BYTE</Type>
+					<BitSize>8</BitSize>
+				</Local>
+				<Local>
+					<Name>crc</Name>
+					<Type GUID="{18071995-0000-0000-0000-000000000073}">XWORD</Type>
 					<BitSize>64</BitSize>
-				</Parameter>
-				<Parameter>
-					<Name>dataSize</Name>
-					<Type GUID="{18071995-0000-0000-0000-000000000008}">UDINT</Type>
-					<BitSize>32</BitSize>
-				</Parameter>
+				</Local>
+				<Local>
+					<Name>i</Name>
+					<Type GUID="{18071995-0000-0000-0000-000000000005}">UINT</Type>
+					<BitSize>16</BitSize>
+				</Local>
+				<Local>
+					<Name>j</Name>
+					<Type GUID="{18071995-0000-0000-0000-000000000005}">UINT</Type>
+					<BitSize>16</BitSize>
+				</Local>
+			</Method>
+			<Method>
+				<Name>init</Name>
+				<ReturnBitSize X64="64">32</ReturnBitSize>
 			</Method>
 			<Method>
 				<Name>computeNormal</Name>
@@ -565,7 +654,7 @@
 				</Parameter>
 				<Parameter>
 					<Name>dataSize</Name>
-					<Type GUID="{18071995-0000-0000-0000-000000000008}">UDINT</Type>
+					<Type GUID="{18071995-0000-0000-0000-000000000007}">DWORD</Type>
 					<BitSize>32</BitSize>
 				</Parameter>
 				<Local>
@@ -584,13 +673,8 @@
 					<BitSize>8</BitSize>
 				</Local>
 				<Local>
-					<Name>crc</Name>
-					<Type GUID="{18071995-0000-0000-0000-000000000073}">XWORD</Type>
-					<BitSize>64</BitSize>
-				</Local>
-				<Local>
 					<Name>i</Name>
-					<Type GUID="{18071995-0000-0000-0000-000000000008}">UDINT</Type>
+					<Type GUID="{18071995-0000-0000-0000-000000000007}">DWORD</Type>
 					<BitSize>32</BitSize>
 				</Local>
 				<Local>
@@ -598,63 +682,6 @@
 					<Type GUID="{18071995-0000-0000-0000-000000000001}">BYTE</Type>
 					<BitSize>8</BitSize>
 				</Local>
-			</Method>
-			<Method>
-				<Name>computeReflected</Name>
-				<Comment><![CDATA[ Computes CRC using a reflected lookup table]]></Comment>
-				<ReturnType GUID="{18071995-0000-0000-0000-000000000073}">XWORD</ReturnType>
-				<ReturnBitSize>64</ReturnBitSize>
-				<Parameter>
-					<Name>pData</Name>
-					<Type GUID="{18071995-0000-0000-0000-000000000001}" PointerTo="1">BYTE</Type>
-					<BitSize>64</BitSize>
-				</Parameter>
-				<Parameter>
-					<Name>dataSize</Name>
-					<Type GUID="{18071995-0000-0000-0000-000000000008}">UDINT</Type>
-					<BitSize>32</BitSize>
-				</Parameter>
-				<Local>
-					<Name>pByte</Name>
-					<Type GUID="{18071995-0000-0000-0000-000000000001}" PointerTo="1">BYTE</Type>
-					<BitSize>64</BitSize>
-				</Local>
-				<Local>
-					<Name>bByte</Name>
-					<Type GUID="{18071995-0000-0000-0000-000000000001}">BYTE</Type>
-					<BitSize>8</BitSize>
-				</Local>
-				<Local>
-					<Name>mode</Name>
-					<Type GUID="{18071995-0000-0000-0000-000000000001}">BYTE</Type>
-					<BitSize>8</BitSize>
-				</Local>
-				<Local>
-					<Name>crc</Name>
-					<Type GUID="{18071995-0000-0000-0000-000000000073}">XWORD</Type>
-					<BitSize>64</BitSize>
-				</Local>
-				<Local>
-					<Name>i</Name>
-					<Type GUID="{18071995-0000-0000-0000-000000000008}">UDINT</Type>
-					<BitSize>32</BitSize>
-				</Local>
-				<Local>
-					<Name>lookupIndex</Name>
-					<Type GUID="{18071995-0000-0000-0000-000000000001}">BYTE</Type>
-					<BitSize>8</BitSize>
-				</Local>
-			</Method>
-			<Method>
-				<Name>init</Name>
-				<Comment><![CDATA[ Initializes the CRC table in function of chosen CRC Type]]></Comment>
-				<ReturnType GUID="{18071995-0000-0000-0000-000000000030}">BOOL</ReturnType>
-				<ReturnBitSize>8</ReturnBitSize>
-				<Parameter>
-					<Name>crcType</Name>
-					<Type GUID="{1F86C4C8-D528-34B5-6E80-2960E7FCFE5D}" Namespace="Tc3_CRC">E_CRC_Type</Type>
-					<BitSize>8</BitSize>
-				</Parameter>
 			</Method>
 			<Method>
 				<Name>reflectBits</Name>
@@ -688,6 +715,65 @@
 				</Local>
 			</Method>
 			<Method>
+				<Name>finalize</Name>
+				<Comment><![CDATA[ Finalize the input and return any number of output bytes.]]></Comment>
+				<ReturnBitSize X64="64">32</ReturnBitSize>
+				<Parameter>
+					<Name>out</Name>
+					<Type GUID="{18071995-0000-0000-0000-000000000001}" PointerTo="1" RpcArrayDim="1">BYTE</Type>
+					<BitSize>64</BitSize>
+					<Properties>
+						<Property>
+							<Name>variable_length_array</Name>
+						</Property>
+						<Property>
+							<Name>Dimensions</Name>
+							<Value>1</Value>
+						</Property>
+					</Properties>
+				</Parameter>
+				<Local>
+					<Name>byteVal</Name>
+					<Type GUID="{18071995-0000-0000-0000-000000000001}">BYTE</Type>
+					<BitSize>8</BitSize>
+				</Local>
+				<Local>
+					<Name>mode</Name>
+					<Type GUID="{18071995-0000-0000-0000-000000000001}">BYTE</Type>
+					<BitSize>8</BitSize>
+				</Local>
+				<Local>
+					<Name>i</Name>
+					<Type GUID="{18071995-0000-0000-0000-000000000009}">DINT</Type>
+					<BitSize>32</BitSize>
+				</Local>
+				<Local>
+					<Name>j</Name>
+					<Type GUID="{18071995-0000-0000-0000-000000000009}">DINT</Type>
+					<BitSize>32</BitSize>
+				</Local>
+				<Local>
+					<Name>ub</Name>
+					<Type GUID="{18071995-0000-0000-0000-000000000009}">DINT</Type>
+					<BitSize>32</BitSize>
+				</Local>
+			</Method>
+			<Method>
+				<Name>__getalgorithm</Name>
+				<ReturnType GUID="{18071995-0000-0000-0000-000100000050}">STRING(80)</ReturnType>
+				<ReturnBitSize>648</ReturnBitSize>
+				<Local>
+					<Name>algorithm</Name>
+					<Type GUID="{18071995-0000-0000-0000-000100000050}">STRING(80)</Type>
+					<BitSize>648</BitSize>
+				</Local>
+				<Properties>
+					<Property>
+						<Name>property</Name>
+					</Property>
+				</Properties>
+			</Method>
+			<Method>
 				<Name>generateNormalCRCTable</Name>
 				<Comment><![CDATA[ Generates a standard CRC lookup table]]></Comment>
 				<ReturnType GUID="{18071995-0000-0000-0000-000000000030}">BOOL</ReturnType>
@@ -714,37 +800,117 @@
 				</Local>
 			</Method>
 			<Method>
-				<Name>generateReflectedCRCTable</Name>
-				<Comment><![CDATA[ Generates a reflected CRC lookup table]]></Comment>
+				<Name>reconfigure</Name>
+				<Comment><![CDATA[ Reconfigures and initializes the CRC table in function of chosen CRC Type]]></Comment>
 				<ReturnType GUID="{18071995-0000-0000-0000-000000000030}">BOOL</ReturnType>
 				<ReturnBitSize>8</ReturnBitSize>
+				<Parameter>
+					<Name>crcType</Name>
+					<Type GUID="{4881D5CF-C2BF-E75E-A5F4-4961C94C4345}" Namespace="Tc3_CRC">E_CRC_Type</Type>
+					<BitSize>8</BitSize>
+				</Parameter>
+			</Method>
+			<Method>
+				<Name>computeReflected</Name>
+				<Comment><![CDATA[ Computes CRC using a reflected lookup table]]></Comment>
+				<ReturnType GUID="{18071995-0000-0000-0000-000000000073}">XWORD</ReturnType>
+				<ReturnBitSize>64</ReturnBitSize>
+				<Parameter>
+					<Name>pData</Name>
+					<Type GUID="{18071995-0000-0000-0000-000000000001}" PointerTo="1">BYTE</Type>
+					<BitSize>64</BitSize>
+				</Parameter>
+				<Parameter>
+					<Name>dataSize</Name>
+					<Type GUID="{18071995-0000-0000-0000-000000000007}">DWORD</Type>
+					<BitSize>32</BitSize>
+				</Parameter>
 				<Local>
-					<Name>mode</Name>
+					<Name>pByte</Name>
+					<Type GUID="{18071995-0000-0000-0000-000000000001}" PointerTo="1">BYTE</Type>
+					<BitSize>64</BitSize>
+				</Local>
+				<Local>
+					<Name>bByte</Name>
 					<Type GUID="{18071995-0000-0000-0000-000000000001}">BYTE</Type>
 					<BitSize>8</BitSize>
 				</Local>
 				<Local>
-					<Name>crc</Name>
-					<Type GUID="{18071995-0000-0000-0000-000000000073}">XWORD</Type>
-					<BitSize>64</BitSize>
-				</Local>
-				<Local>
 					<Name>i</Name>
-					<Type GUID="{18071995-0000-0000-0000-000000000005}">UINT</Type>
-					<BitSize>16</BitSize>
+					<Type GUID="{18071995-0000-0000-0000-000000000007}">DWORD</Type>
+					<BitSize>32</BitSize>
 				</Local>
 				<Local>
-					<Name>j</Name>
-					<Type GUID="{18071995-0000-0000-0000-000000000005}">UINT</Type>
-					<BitSize>16</BitSize>
+					<Name>lookupIndex</Name>
+					<Type GUID="{18071995-0000-0000-0000-000000000001}">BYTE</Type>
+					<BitSize>8</BitSize>
 				</Local>
+			</Method>
+			<Method>
+				<Name>update</Name>
+				<Comment><![CDATA[ Add input, depending on the algorithm this could be called any number of times.]]></Comment>
+				<ReturnBitSize X64="64">32</ReturnBitSize>
+				<Parameter>
+					<Name>input</Name>
+					<Type GUID="{18071995-0000-0000-0000-000000000001}" PointerTo="1">BYTE</Type>
+					<BitSize>64</BitSize>
+				</Parameter>
+				<Parameter>
+					<Name>input_len</Name>
+					<Type GUID="{18071995-0000-0000-0000-000000000007}">DWORD</Type>
+					<BitSize>32</BitSize>
+				</Parameter>
 			</Method>
 			<Properties>
 				<Property>
 					<Name>PouType</Name>
 					<Value>FunctionBlock</Value>
 				</Property>
+				<Property>
+					<Name>no_explicit_call</Name>
+					<Value>do not call this POU directly</Value>
+				</Property>
 			</Properties>
+		</DataType>
+		<DataType>
+			<Name GUID="{4686A0CF-0ACB-B161-5904-563930C9547D}" Namespace="Tc3_CRC" AutoDeleteType="true">U_8BYTEARRAY</Name>
+			<BitSize>64</BitSize>
+			<SubItem>
+				<Name>byteArray</Name>
+				<Type GUID="{18071995-0000-0000-0000-000000000001}">BYTE</Type>
+				<ArrayInfo>
+					<LBound>0</LBound>
+					<Elements>8</Elements>
+				</ArrayInfo>
+				<BitSize>64</BitSize>
+				<BitOffs>0</BitOffs>
+			</SubItem>
+			<SubItem>
+				<Name>xword_</Name>
+				<Type GUID="{18071995-0000-0000-0000-000000000073}">XWORD</Type>
+				<BitSize>64</BitSize>
+				<BitOffs>0</BitOffs>
+			</SubItem>
+			<SubItem>
+				<Name>dword_</Name>
+				<Type GUID="{18071995-0000-0000-0000-000000000007}">DWORD</Type>
+				<ArrayInfo>
+					<LBound>0</LBound>
+					<Elements>2</Elements>
+				</ArrayInfo>
+				<BitSize>64</BitSize>
+				<BitOffs>0</BitOffs>
+			</SubItem>
+			<SubItem>
+				<Name>word_</Name>
+				<Type GUID="{18071995-0000-0000-0000-000000000004}">WORD</Type>
+				<ArrayInfo>
+					<LBound>0</LBound>
+					<Elements>4</Elements>
+				</ArrayInfo>
+				<BitSize>64</BitSize>
+				<BitOffs>0</BitOffs>
+			</SubItem>
 		</DataType>
 		<DataType>
 			<Name GUID="{302277DD-5AD1-433D-B776-5031AECC2BB4}" TcBaseType="true">EPlcPersistentStatus</Name>
@@ -1202,7 +1368,7 @@
 			</Properties>
 		</DataType>
 	</DataTypes>
-	<Instance Id="#x08502000" KeepUnrestoredLinks="2" TmcPath="UnitTests\UnitTests.tmc" TmcHash="{94042442-A27A-7B4F-9B44-8BA9702BE462}">
+	<Instance Id="#x08502000" KeepUnrestoredLinks="2" TmcPath="UnitTests\UnitTests.tmc" TmcHash="{E6657447-CE8D-53CA-8540-40803FFBE73D}">
 		<Name>__FILENAME__</Name>
 		<TmcDesc GUID="{9DF3F8FB-250E-4B37-A1BA-36E82D10EFDD}" TcSmClass="TComPlcObjDef">
 			<Name>UnitTests</Name>
@@ -1414,6 +1580,36 @@
 						<BitOffs>3072576</BitOffs>
 					</Symbol>
 					<Symbol>
+						<Name>GVC_CRC.CRCMasks</Name>
+						<BitSize>512</BitSize>
+						<BaseType GUID="{18071995-0000-0000-0000-000000000073}">XWORD</BaseType>
+						<ArrayInfo>
+							<LBound>0</LBound>
+							<Elements>8</Elements>
+						</ArrayInfo>
+						<Properties>
+							<Property>
+								<Name>TcVarGlobal</Name>
+							</Property>
+						</Properties>
+						<BitOffs>3073216</BitOffs>
+					</Symbol>
+					<Symbol>
+						<Name>GVC_CRC.CRCMsb</Name>
+						<BitSize>512</BitSize>
+						<BaseType GUID="{18071995-0000-0000-0000-000000000073}">XWORD</BaseType>
+						<ArrayInfo>
+							<LBound>0</LBound>
+							<Elements>8</Elements>
+						</ArrayInfo>
+						<Properties>
+							<Property>
+								<Name>TcVarGlobal</Name>
+							</Property>
+						</Properties>
+						<BitOffs>3073728</BitOffs>
+					</Symbol>
+					<Symbol>
 						<Name>GVC_CRC.CRCShift</Name>
 						<BitSize>64</BitSize>
 						<BaseType GUID="{18071995-0000-0000-0000-000000000001}">BYTE</BaseType>
@@ -1426,7 +1622,7 @@
 								<Name>TcVarGlobal</Name>
 							</Property>
 						</Properties>
-						<BitOffs>3073728</BitOffs>
+						<BitOffs>3074240</BitOffs>
 					</Symbol>
 					<Symbol>
 						<Name>GVC_CRC.referenceCheck</Name>
@@ -1441,19 +1637,19 @@
 								<Name>TcVarGlobal</Name>
 							</Property>
 						</Properties>
-						<BitOffs>3073792</BitOffs>
+						<BitOffs>3074304</BitOffs>
 					</Symbol>
 					<Symbol>
 						<Name>MAIN.i</Name>
 						<BitSize>8</BitSize>
 						<BaseType GUID="{18071995-0000-0000-0000-000000000001}">BYTE</BaseType>
-						<BitOffs>3073864</BitOffs>
+						<BitOffs>3074376</BitOffs>
 					</Symbol>
 					<Symbol>
 						<Name>MAIN.crcType</Name>
 						<BitSize>8</BitSize>
-						<BaseType GUID="{1F86C4C8-D528-34B5-6E80-2960E7FCFE5D}">Tc3_CRC.E_CRC_Type</BaseType>
-						<BitOffs>3073872</BitOffs>
+						<BaseType GUID="{4881D5CF-C2BF-E75E-A5F4-4961C94C4345}">Tc3_CRC.E_CRC_Type</BaseType>
+						<BitOffs>3074384</BitOffs>
 					</Symbol>
 					<Symbol>
 						<Name>MAIN.firstCycle</Name>
@@ -1462,20 +1658,20 @@
 						<Default>
 							<Bool>true</Bool>
 						</Default>
-						<BitOffs>3073880</BitOffs>
+						<BitOffs>3074392</BitOffs>
 					</Symbol>
 					<Symbol>
 						<Name>MAIN.unitTestFBInitOK</Name>
 						<Comment><![CDATA[ Unit test results]]></Comment>
 						<BitSize>8</BitSize>
 						<BaseType GUID="{18071995-0000-0000-0000-000000000030}">BOOL</BaseType>
-						<BitOffs>3073888</BitOffs>
+						<BitOffs>3074400</BitOffs>
 					</Symbol>
 					<Symbol>
 						<Name>MAIN.unitTestTypesOK</Name>
 						<BitSize>8</BitSize>
 						<BaseType GUID="{18071995-0000-0000-0000-000000000030}">BOOL</BaseType>
-						<BitOffs>3073896</BitOffs>
+						<BitOffs>3074408</BitOffs>
 					</Symbol>
 					<Symbol>
 						<Name>GVC_CRC.CRC_Parameters</Name>
@@ -3926,7 +4122,7 @@
 								<Name>TcVarGlobal</Name>
 							</Property>
 						</Properties>
-						<BitOffs>3073920</BitOffs>
+						<BitOffs>3074432</BitOffs>
 					</Symbol>
 					<Symbol>
 						<Name>Global_Version.stLibVersion_Tc3_CRC</Name>
@@ -3947,7 +4143,7 @@
 							</SubItem>
 							<SubItem>
 								<Name>.iRevision</Name>
-								<Value>1</Value>
+								<Value>2</Value>
 							</SubItem>
 							<SubItem>
 								<Name>.nFlags</Name>
@@ -3955,7 +4151,7 @@
 							</SubItem>
 							<SubItem>
 								<Name>.sVersion</Name>
-								<String><![CDATA[0.0.0.1]]></String>
+								<String><![CDATA[0.0.0.2]]></String>
 							</SubItem>
 						</Default>
 						<Properties>
@@ -3966,7 +4162,7 @@
 								<Name>const_non_replaced</Name>
 							</Property>
 						</Properties>
-						<BitOffs>3108416</BitOffs>
+						<BitOffs>3108928</BitOffs>
 					</Symbol>
 					<Symbol>
 						<Name>Global_Version.stLibVersion_Tc2_Utilities</Name>
@@ -4006,29 +4202,90 @@
 								<Name>const_non_replaced</Name>
 							</Property>
 						</Properties>
-						<BitOffs>3108704</BitOffs>
+						<BitOffs>3109216</BitOffs>
+					</Symbol>
+					<Symbol>
+						<Name>Global_Version.stLibVersion_Tc3_AlgoInterfaces</Name>
+						<BitSize>288</BitSize>
+						<BaseType GUID="{6F5942ED-BFA1-497D-8225-23C6DAAD0A09}">ST_LibVersion</BaseType>
+						<Default>
+							<SubItem>
+								<Name>.iMajor</Name>
+								<Value>0</Value>
+							</SubItem>
+							<SubItem>
+								<Name>.iMinor</Name>
+								<Value>0</Value>
+							</SubItem>
+							<SubItem>
+								<Name>.iBuild</Name>
+								<Value>0</Value>
+							</SubItem>
+							<SubItem>
+								<Name>.iRevision</Name>
+								<Value>1</Value>
+							</SubItem>
+							<SubItem>
+								<Name>.nFlags</Name>
+								<Value>0</Value>
+							</SubItem>
+							<SubItem>
+								<Name>.sVersion</Name>
+								<String><![CDATA[0.0.0.1]]></String>
+							</SubItem>
+						</Default>
+						<Properties>
+							<Property>
+								<Name>TcVarGlobal</Name>
+							</Property>
+							<Property>
+								<Name>const_non_replaced</Name>
+							</Property>
+						</Properties>
+						<BitOffs>3109504</BitOffs>
 					</Symbol>
 					<Symbol>
 						<Name>MAIN.crc</Name>
 						<Comment><![CDATA[ First algorithm, CRC_8_AUTOSAR ]]></Comment>
-						<BitSize>17088</BitSize>
-						<BaseType GUID="{A2C1171A-1FE1-D281-4673-E61F53FD533E}">Tc3_CRC.CRC</BaseType>
+						<BitSize>17280</BitSize>
+						<BaseType GUID="{68505DE7-CA55-F756-CD33-9D64B146A634}">Tc3_CRC.CRC</BaseType>
 						<Properties>
 							<Property>
 								<Name>old_input_assignments</Name>
 							</Property>
 						</Properties>
-						<BitOffs>3116608</BitOffs>
+						<BitOffs>3117696</BitOffs>
 					</Symbol>
 					<Symbol>
 						<Name>MAIN.crcResults</Name>
+						<Comment><![CDATA[ resulting crc]]></Comment>
 						<BitSize>4864</BitSize>
-						<BaseType GUID="{18071995-0000-0000-0000-000000000073}">XWORD</BaseType>
+						<BaseType GUID="{4686A0CF-0ACB-B161-5904-563930C9547D}" Namespace="Tc3_CRC">U_8BYTEARRAY</BaseType>
 						<ArrayInfo>
 							<LBound>0</LBound>
 							<Elements>76</Elements>
 						</ArrayInfo>
-						<BitOffs>3133696</BitOffs>
+						<BitOffs>3134976</BitOffs>
+					</Symbol>
+					<Symbol>
+						<Name>MAIN.crcAlgorithm</Name>
+						<BitSize>648</BitSize>
+						<BaseType GUID="{18071995-0000-0000-0000-000100000050}">STRING(80)</BaseType>
+						<BitOffs>3139840</BitOffs>
+					</Symbol>
+					<Symbol>
+						<Name>TwinCAT_SystemInfoVarList._TaskPouOid_PlcTask</Name>
+						<BitSize>32</BitSize>
+						<BaseType GUID="{18071995-0000-0000-0000-00000000000F}">OTCID</BaseType>
+						<Properties>
+							<Property>
+								<Name>TcVarGlobal</Name>
+							</Property>
+							<Property>
+								<Name>no_init</Name>
+							</Property>
+						</Properties>
+						<BitOffs>3140704</BitOffs>
 					</Symbol>
 					<Symbol>
 						<Name>TwinCAT_SystemInfoVarList._AppInfo</Name>
@@ -4042,7 +4299,7 @@
 								<Name>no_init</Name>
 							</Property>
 						</Properties>
-						<BitOffs>3138816</BitOffs>
+						<BitOffs>3140736</BitOffs>
 					</Symbol>
 					<Symbol>
 						<Name>TwinCAT_SystemInfoVarList._TaskInfo</Name>
@@ -4060,21 +4317,7 @@
 								<Name>no_init</Name>
 							</Property>
 						</Properties>
-						<BitOffs>3140864</BitOffs>
-					</Symbol>
-					<Symbol>
-						<Name>TwinCAT_SystemInfoVarList._TaskPouOid_PlcTask</Name>
-						<BitSize>32</BitSize>
-						<BaseType GUID="{18071995-0000-0000-0000-00000000000F}">OTCID</BaseType>
-						<Properties>
-							<Property>
-								<Name>TcVarGlobal</Name>
-							</Property>
-							<Property>
-								<Name>no_init</Name>
-							</Property>
-						</Properties>
-						<BitOffs>3141888</BitOffs>
+						<BitOffs>3142784</BitOffs>
 					</Symbol>
 					<Symbol>
 						<Name>TwinCAT_SystemInfoVarList._TaskOid_PlcTask</Name>
@@ -4088,7 +4331,7 @@
 								<Name>no_init</Name>
 							</Property>
 						</Properties>
-						<BitOffs>3141920</BitOffs>
+						<BitOffs>3143808</BitOffs>
 					</Symbol>
 					<Symbol>
 						<Name>TwinCAT_SystemInfoVarList.__PlcTask</Name>
@@ -4109,37 +4352,7 @@
 								<Value>PlcTask</Value>
 							</Property>
 						</Properties>
-						<BitOffs>3141952</BitOffs>
-					</Symbol>
-					<Symbol>
-						<Name>GVC_CRC.CRCMasks</Name>
-						<BitSize>512</BitSize>
-						<BaseType GUID="{18071995-0000-0000-0000-000000000073}">XWORD</BaseType>
-						<ArrayInfo>
-							<LBound>0</LBound>
-							<Elements>8</Elements>
-						</ArrayInfo>
-						<Properties>
-							<Property>
-								<Name>TcVarGlobal</Name>
-							</Property>
-						</Properties>
-						<BitOffs>3388480</BitOffs>
-					</Symbol>
-					<Symbol>
-						<Name>GVC_CRC.CRCMsb</Name>
-						<BitSize>512</BitSize>
-						<BaseType GUID="{18071995-0000-0000-0000-000000000073}">XWORD</BaseType>
-						<ArrayInfo>
-							<LBound>0</LBound>
-							<Elements>8</Elements>
-						</ArrayInfo>
-						<Properties>
-							<Property>
-								<Name>TcVarGlobal</Name>
-							</Property>
-						</Properties>
-						<BitOffs>3388992</BitOffs>
+						<BitOffs>3143872</BitOffs>
 					</Symbol>
 				</DataArea>
 			</DataAreas>
@@ -4150,7 +4363,7 @@
 				</Property>
 				<Property>
 					<Name>ChangeDate</Name>
-					<Value>2025-07-23T17:21:12</Value>
+					<Value>2025-08-02T13:39:11</Value>
 				</Property>
 				<Property>
 					<Name>GeneratedCodeSize</Name>
@@ -4181,7 +4394,7 @@
 				</Value>
 				<Value>
 					<Name>Application Timestamp</Name>
-					<Value>1753291272</Value>
+					<Value>1754141951</Value>
 				</Value>
 				<Value>
 					<Name>Symbolic Mapping</Name>

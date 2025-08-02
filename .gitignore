@@ -187,6 +187,7 @@ StyleCopReport.xml
 *.pidb
 *.svclog
 *.scc
+*.~u 
 
 # Chutzpah Test files
 _Chutzpah*
@@ -656,3 +657,4 @@ dist
 # Built Visual Studio Code Extensions
 *.vsix
 # End of https://www.toptal.com/developers/gitignore/api/twincat3,visualstudiocode,visualstudio,microsoftoffice,node
+/solution/TwinCAT Project.~u

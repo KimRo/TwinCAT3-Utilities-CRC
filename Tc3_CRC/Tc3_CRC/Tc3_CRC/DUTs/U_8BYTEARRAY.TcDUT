@@ -1,0 +1,14 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1">
+  <DUT Name="U_8BYTEARRAY" Id="{3ec57298-e935-40f4-bcbb-3b2021ac43d3}">
+    <Declaration><![CDATA[TYPE U_8BYTEARRAY :
+UNION
+	byteArray					: ARRAY[0..7] OF BYTE;
+	xword_						: XWORD;
+	dword_						: ARRAY[0..1] OF DWORD;					
+	word_						: ARRAY[0..3] OF WORD;					
+END_UNION
+END_TYPE
+]]></Declaration>
+  </DUT>
+</TcPlcObject>

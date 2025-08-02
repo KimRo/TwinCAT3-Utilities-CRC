@@ -4,9 +4,10 @@
     <Declaration><![CDATA[PROGRAM MAIN
 VAR
 	crc					: CRC(E_CRC_TYPE.CRC_8_AUTOSAR); 	// First algorithm, CRC_8_AUTOSAR 
-	crcResults			: ARRAY[0..E_CRC_TYPE.CRC_NO_OF_TYPES-1] OF XWORD; 	// resulting crc
+	crcResults			: ARRAY[0..E_CRC_TYPE.CRC_NO_OF_TYPES-1] OF U_8BYTEARRAY; 	// resulting crc
 	i					: BYTE;
 	crcType				: E_CRC_TYPE;
+	crcAlgorithm		: STRING;
 	firstCycle			: BOOL := TRUE;
 
 	// Unit test results
@@ -17,8 +18,10 @@ END_VAR
     <Implementation>
       <ST><![CDATA[// Test for FB_Init (only valid during first cycle)
 IF firstCycle THEN
-	crcResults[0]		:= crc.compute(ADR(GVC_CRC.referenceCheck), SIZEOF(GVC_CRC.referenceCheck)); 
-	unitTestFBInitOK 	:= (crc.compute(ADR(GVC_CRC.referenceCheck), SIZEOF(GVC_CRC.referenceCheck)) = GVC_CRC.CRC_Parameters[E_CRC_TYPE.CRC_8_AUTOSAR].check);
+	crc.init();
+	crc.update(ADR(GVC_CRC.referenceCheck), SIZEOF(GVC_CRC.referenceCheck)); 
+	crc.finalize(crcResults[0].byteArray);
+	unitTestFBInitOK 	:= (crcResults[0].xword_ = GVC_CRC.CRC_Parameters[E_CRC_TYPE.CRC_8_AUTOSAR].check);
 	firstCycle 			:= FALSE;
 END_IF
 
@@ -26,13 +29,28 @@ END_IF
 unitTestTypesOK			:= TRUE;
 FOR i := 0 TO E_CRC_Type.CRC_NO_OF_TYPES-1 DO 
 	crcType 			:= i;
-	// recalculate crc table ifo crc type
-	crc.init(crcType);	 
+	crc.reconfigure(crcType);					// reconfigure crc table ifo crc type	 	
+	crcAlgorithm		:= crc.algorithm;		// current crcType
+	crc.init(); 								// is not really necessary since reconfigure also initializes after reconfiguration
 	// reference array [16#31, 16#32, 16#33, 16#34, 16#35, 16#36, 16#37, 16#38, 16#39]; (Number 123456789)
-	crcResults[i]		:= crc.compute(ADR(GVC_CRC.referenceCheck), SIZEOF(GVC_CRC.referenceCheck));   
-	unitTestTypesOK 	:= unitTestTypesOK AND crcResults[i] = GVC_CRC.CRC_Parameters[i].check; 
+	crc.update(ADR(GVC_CRC.referenceCheck), SIZEOF(GVC_CRC.referenceCheck));
+	crc.finalize(crcResults[i].byteArray);   
+	unitTestTypesOK 	:= unitTestTypesOK AND (crcResults[i].xword_ = GVC_CRC.CRC_Parameters[i].check); 
 END_FOR
 
+// Test all defined crc types for concatenated crc
+unitTestTypesOK			:= TRUE;
+FOR i := 0 TO E_CRC_Type.CRC_NO_OF_TYPES-1 DO 
+	crcType 			:= i;
+	crc.reconfigure(crcType);					// reconfigure crc table ifo crc type	 	
+	crcAlgorithm		:= crc.algorithm;		// current crcType
+	crc.init(); 								// is not really necessary since reconfigure also initializes after reconfiguration
+	// reference array [16#31, 16#32, 16#33, 16#34, 16#35, 16#36, 16#37, 16#38, 16#39]; (Number 123456789)
+	crc.update(ADR(GVC_CRC.referenceCheck), SIZEOF(GVC_CRC.referenceCheck)-3);
+	crc.update(ADR(GVC_CRC.referenceCheck)+6, SIZEOF(GVC_CRC.referenceCheck)-6);	
+	crc.finalize(crcResults[i].byteArray);   
+	unitTestTypesOK 	:= unitTestTypesOK AND (crcResults[i].xword_ = GVC_CRC.CRC_Parameters[i].check); 
+END_FOR
 ]]></ST>
     </Implementation>
   </POU>

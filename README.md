@@ -5,14 +5,15 @@ A comprehensive TwinCAT 3 CRC (Cyclic Redundancy Check) calculation library writ
 
 ## 🧠 Remarks and limitations
 
-- The library can for now only be ran on a x64 bit runtime because of the LWORD usage 
+- The library can for now only be ran on a x64 bit runtime because of the LWORD (64bit) usage necessary for >CRC32
 - Compiled with TwinCAT 4024.67 but tested on TwinCAT 4026.17
 ---
 
 
 ## 🔧 CRC Functionality Overview
 
-The function block `CRC` can be initialized for any of the above types. It then uses a lookup table to efficiently compute the CRC using either normal or reflected bit logic.
+- The function block `CRC` can be initialized for any of the above types. It then uses a lookup table to efficiently compute the CRC using either normal or reflected bit logic.
+- Supports streaming data by calling the update() method multiple time before finalizing
 
 ---
 
@@ -20,14 +21,18 @@ The function block `CRC` can be initialized for any of the above types. It then 
 
 ```iecst
 VAR
-    fbCRC : CRC(CRC_8_AUTOSAR); // Pass the required CRC type
-    data : ARRAY[0..9] OF BYTE := [1,2,3,4,5,6,7,8,9,0];
-    result : XWORD;
+    crc         : CRC(Tc3_Crc.E_CRC_Type.CRC_8_AUTOSAR); // Pass the required CRC type
+    data        : ARRAY[1..9] OF BYTE := [1,2,3,4,5,6,7,8,9];
+    result      : Tc3_Crc.U_8BYTEARRAY; // alias type from crc library
 END_VAR
 
 // if in-code CRC Type reinitialisation is necessary, use the init method
-// fbCRC.FB_Init(TRUE, FALSE, E_CRC_Type.CRC_8_AUTOSAR);
-result := fbCRC.compute(ADR(data), SIZEOF(data));
+crc.reconfigure(Tc3_Crc.E_CRC_Type.CRC_8_AUTOSAR);      // reconfigures for new algorithm + init()
+crc.init();                                             // initialization of calculation, reset current crc
+crc.update(ADR(data), SIZEOF(data)-3);
+crc.update(ADR(data)+6, SIZEOF(data)-6);	
+crc.update(...);
+crc.finalize(result.byteArray);                         //Returns the crc result in various result types in alias
 ```
 
 ---

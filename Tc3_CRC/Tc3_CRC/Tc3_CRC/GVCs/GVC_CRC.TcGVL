@@ -1,6 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <TcPlcObject Version="1.1.0.1">
-  <GVL Name="GVC_CRC" Id="{bd9aa066-4efd-4630-ad26-83c1c924f3b7}">
+  <GVL Name="GVC_CRC" Id="{67545f69-7855-46f5-be0f-0f1583d80ba4}">
     <Declaration><![CDATA[{attribute 'qualified_only'}
 VAR_GLOBAL CONSTANT
 	CRCMasks 		: ARRAY[0..E_CRC_Mode.CRC64] OF XWORD 	:= [16#FF, 16#FFFF, 16#FFFFFF, 16#FFFFFFFF, 16#FFFFFFFFFF, 16#0, 16#0, 16#FFFFFFFFFFFFFFFF];

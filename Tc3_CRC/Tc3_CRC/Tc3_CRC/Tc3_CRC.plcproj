@@ -17,10 +17,10 @@
     <Implicit_KindOfTask>{3ac9d500-34d7-4ab6-a2c6-edf6ff036154}</Implicit_KindOfTask>
     <Implicit_Jitter_Distribution>{b379e3ea-d7fd-4712-ad87-52fc4d3f43be}</Implicit_Jitter_Distribution>
     <LibraryReferences>{fba2c9a2-8864-4248-b101-8b3349a39272}</LibraryReferences>
-    <Company>Kim Robbens</Company>
+    <Company>RKe</Company>
     <Released>false</Released>
     <Title>Tc3_CRC</Title>
-    <ProjectVersion>0.0.0.1</ProjectVersion>
+    <ProjectVersion>0.0.0.2</ProjectVersion>
     <LibraryCategories>
       <LibraryCategory xmlns="">
         <Id>{f4989e8e-47d4-4338-9af0-ff4afed3d496}</Id>
@@ -41,6 +41,10 @@
     </SelectedLibraryCategories>
     <GlobalVersionStructureIncluded>true</GlobalVersionStructureIncluded>
     <POUsForPropertyAccessIncluded>true</POUsForPropertyAccessIncluded>
+    <DefaultNamespace>Tc3_CRC</DefaultNamespace>
+    <Placeholder>Tc3_CRC</Placeholder>
+    <Author>Kim Robbens</Author>
+    <Description>CRC (Cyclic Redundancy Check) calculation with support for numerous standard CRC algorithms</Description>
   </PropertyGroup>
   <ItemGroup>
     <Folder Include="DUTs" />
@@ -57,6 +61,9 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="DUTs\ST_CRC_Params.TcDUT">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="DUTs\U_8BYTEARRAY.TcDUT">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="GVCs\GVC_CRC.TcGVL">
@@ -86,6 +93,10 @@
     <PlaceholderReference Include="Tc2_Utilities">
       <DefaultResolution>Tc2_Utilities, * (Beckhoff Automation GmbH)</DefaultResolution>
       <Namespace>Tc2_Utilities</Namespace>
+    </PlaceholderReference>
+    <PlaceholderReference Include="Tc3_AlgoInterfaces">
+      <DefaultResolution>Tc3_AlgoInterfaces, * (RKe)</DefaultResolution>
+      <Namespace>Tc3_AlgoInterfaces</Namespace>
     </PlaceholderReference>
   </ItemGroup>
   <ItemGroup>
